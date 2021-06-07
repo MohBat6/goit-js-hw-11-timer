@@ -1,50 +1,48 @@
 class CountdownTimer {
-  constructor({targetDate}) {
-      
-      this.days= document.querySelector('[data-value="days"]');
-      this.hours= document.querySelector('[data-value="hours"]');
-      this.mins= document.querySelector('[data-value="mins"]');
-      this.secs = document.querySelector('[data-value="secs"]');
-      this.targetDate = targetDate;
-      this.intervalId = null;
-  };
-
-  start() {
-     this.intervalId= setInterval(() => {
-          const deltaTime = this.targetDate - Date.now();
-          const time = this.getTimerComponents(deltaTime);
-         this.updateClockface(time);
-      }, 1000);
-  };
-
-
-    pad(value) {
-  return String(value).padStart(2, '0');
-  };
-  
-  
-      getTimerComponents(time) {
-  const days = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
-  const hours = this.pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
-  const mins = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
-  const secs = this.pad(Math.floor((time % (1000 * 60)) / 1000));
-
-  return { days, hours, mins, secs };
+  constructor({ selector, targetDate }) {
+      this.selector = selector;
+      this.targetData = targetDate;
+      this.interval = null;
+      this.updateDate();
   }
-
-  updateClockface({days, hours, mins, secs}) {
-this.days.textContent = `${days}`;
-this.hours.textContent = `${hours}`;
-this.mins.textContent = `${mins}`;
-this.secs.textContent = `${secs}`;
-  };
-
+  getRefs() {
+      return {
+          days: document.querySelector(
+              `${this.selector} [data-value="days"]`,
+          ),
+          hours: document.querySelector(
+              `${this.selector} [data-value="hours"]`,
+          ),
+          mins: document.querySelector(
+              `${this.selector} [data-value="mins"]`,
+          ),
+          sec: document.querySelector(`${this.selector} [data-value="secs"]`),
+      };
+  }
+  updateDate() {
+      this.interval = setInterval(() => {
+          const { days, hours, mins, sec } = this.getRefs();
+          const time = this.targetData - Date.now();
+          if (time < 0) {
+              clearInterval(this.interval);
+              return;
+          }
+          days.textContent = Math.floor(time / (1000 * 60 * 60 * 24));
+          hours.textContent = Math.floor(
+              (time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+          );
+          mins.textContent = Math.floor(
+              (time % (1000 * 60 * 60)) / (1000 * 60),
+          );
+          sec.textContent = Math.floor((time % (1000 * 60)) / 1000);
+      }, 1000);
+  }
 }
-
 const timer = new CountdownTimer({
   selector: '#timer-1',
-targetDate: new Date('Jul 17, 2021'),
+  targetDate: new Date('May 25, 2022 19:39'),
 });
-
-
-timer.start();
+const timer2 = new CountdownTimer({
+  selector: '#timer-2',
+  targetDate: new Date('May 25, 2023 19:39'),
+});
